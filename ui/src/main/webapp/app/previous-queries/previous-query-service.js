@@ -55,7 +55,7 @@ angular.module('app').factory('previousQueries', function() {
         queries = angular.copy(operations);
     }
 
-     /**
+    /**
      * Find query currently held by the service.
      */
     service.findQuery = function() {
@@ -67,5 +67,24 @@ angular.module('app').factory('previousQueries', function() {
             })
         })
     }
+
+    /**
+     * Updates the specified query currently held by the service.
+     * @param {Integer} chain the operation chain being modified
+     * @param {Integer} operation the operation being changed with the chain
+     * @param {Object} updatedQuery the new name and description
+     */
+    service.updateQuery = function(chain, operation, updatedQuery) {
+        if (chain >= 0 && chain <= queries.length) {
+            var query = queries[chain];
+            console.log('Save Query: ', query);
+
+            if (operation >= 0 && operation <= query.operations.length) {
+                query.operations[operation].selectedOperation.name = updatedQuery.name;
+                query.operations[operation].selectedOperation.description = updatedQuery.description;
+            }
+        }
+    }
+
     return service;
 });

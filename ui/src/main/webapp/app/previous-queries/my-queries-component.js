@@ -49,7 +49,8 @@ function MyQueriesController(previousQueries, navigation, operationChain) {
         operationChain.reset();
         navigation.goToQuery();
     }
-    vm.saveUpdatedDetails = function(ev) {
 
+    vm.saveUpdatedDetails = function(ev) {
+        console.log('Hello');
     }
 }

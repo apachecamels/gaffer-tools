@@ -24,7 +24,8 @@ function myQuery() {
         controller: MyQueryController,
         controllerAs: 'ctrl',
         bindings: {
-            model: '='
+            model: '=',
+            chain: '='
         }
     }
 }
@@ -33,19 +34,23 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
     var vm = this;
 
     var confirm = $mdDialog.confirm()
-    .title('Selected Query Name  and Description will changed ?')
+    .title('Are you sure you want to change the Name and Description?')
     .ok('Ok')
+    .cancel('Cancel')
 
     var invalidName = $mdDialog.confirm()
     .title('Invalid Data!')
-    .textContent('Please enter valid Name and Description')
+    .textContent('Please enter a valid Name and Description')
     .ok('Ok')
+    .cancel('Cancel')
 
     vm.updatedQuery = {
-            name: null,
-            description: null
-        }
-        
+        name: null,
+        description: null
+    }
+
+    vm.operationIndex = 0;
+
     //var OPERATION_CHAIN_CLASS = "uk.gov.gchq.gaffer.operation.OperationChain";
 
     /**
@@ -54,23 +59,44 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
     vm.load = function() {
         operationChain.setOperationChain(vm.model.operations);
         navigation.goToQuery();
-    }  
-    vm.toggleSideNav  = function () {
-            $mdSidenav('right')
-                .toggle();
-            if($mdSidenav('right').isOpen())
-            {
-                previousQueries.findQuery();
-            }     
-        }
-    vm.saveUpdatedDetails = function() {
-        
-        if (vm.updatedQuery.name != null && vm.updatedQuery.name != '') {
-            $mdDialog.show(confirm);
-        } else {
-            $mdDialog.show(invalidName);
-        }
-       
     }
 
+    vm.toggleSideNav  = function (event) {
+    vm.updatedQuery = {
+        name: vm.model.operations[event].selectedOperation.name,
+        description: vm.model.operations[event].selectedOperation.description,
+        index: event
+    }
+        $mdSidenav('right').toggle();
+
+        if($mdSidenav('right').isOpen()) {
+
+            vm.operationIndex = event;
+
+            console.log('1. Operation Index: ', vm.operationIndex);
+            console.log('1. Operation Chain: ', vm.chain);
+            console.log('1. Model Name: ', vm.model.operations[vm.updatedQuery.index].selectedOperation.name);
+        }
+    }
+
+    vm.saveUpdatedDetails = function() {
+        console.log('2. Operation Index: ', vm.operationIndex);
+        console.log('2. Operation Chain: ', vm.chain);
+        console.log('2. Model Name: ', vm.model.operations[vm.updatedQuery.index].selectedOperation.name);
+
+        if (vm.updatedQuery.name != null && vm.updatedQuery.name != '') {
+            $mdDialog.show(confirm).then(() => {
+                // Need to add the updatedQuery values to the model
+//                vm.model.operations[vm.operationIndex].selectedOperation.name = vm.updatedQuery.name;
+//                vm.model.operations[vm.operationIndex].selectedOperation.description = vm.updatedQuery.description;
+
+                previousQueries.updateQuery(vm.chain, vm.operationIndex, vm.updatedQuery);
+
+                $mdSidenav('right').toggle();
+            });
+        } else {
+            // Name is mandatory
+            $mdDialog.show(invalidName);
+        }
+    }
 }
