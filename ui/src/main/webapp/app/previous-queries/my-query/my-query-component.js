@@ -24,8 +24,8 @@ function myQuery() {
         controller: MyQueryController,
         controllerAs: 'ctrl',
         bindings: {
-            model: '=',
-            chain: '='
+            model: '<',
+            chain: '<'
         }
     }
 }
@@ -59,12 +59,16 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
         navigation.goToQuery();
     }
 
-    vm.toggleSideNav  = function (event) {
-
-        $mdSidenav('right').toggle();
-
+    vm.closeSideNav = function() {
         if($mdSidenav('right').isOpen()) {
-            previousQueries.setCurrentChain(vm.chain, event);
+            $mdSidenav('right').toggle();
+        }
+    }
+
+    vm.openSideNav = function (operationSelected) {
+        if(!$mdSidenav('right').isOpen()) {
+            $mdSidenav('right').toggle();
+            previousQueries.setCurrentChain(vm.chain, operationSelected);
         }
     }
 
@@ -72,14 +76,18 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
         var chainToUpdate = previousQueries.getCurrentChain();
 
         if (vm.updatedQuery.name != null && vm.updatedQuery.name != '') {
-            $mdDialog.show(confirm).then(() => {
-                // Need to add the updatedQuery values to the model
-//                vm.model.operations[vm.operationIndex].selectedOperation.name = vm.updatedQuery.name;
-//                vm.model.operations[vm.operationIndex].selectedOperation.description = vm.updatedQuery.description;
+            $mdDialog.show(confirm)
+            .then(() => {
+                // Update the local model to force the UI to update
+                vm.model.operations[chainToUpdate.operation].selectedOperation.name = vm.updatedQuery.name;
+                vm.model.operations[chainToUpdate.operation].selectedOperation.description = vm.updatedQuery.description;
 
+                // Save the changes and close the side nav
                 previousQueries.updateQuery(chainToUpdate.chain, chainToUpdate.operation, vm.updatedQuery);
-
                 $mdSidenav('right').toggle();
+            })
+            .catch(() => {
+                // Do nothing on cancel
             });
         } else {
             // Name is mandatory

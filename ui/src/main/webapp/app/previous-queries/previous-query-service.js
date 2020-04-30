@@ -82,8 +82,6 @@ angular.module('app').factory('previousQueries', function() {
     service.updateQuery = function(chain, operation, updatedQuery) {
         if (chain >= 0 && chain <= queries.length) {
             var query = queries[chain];
-            console.log('Save Query: ', query);
-
             if (operation >= 0 && operation <= query.operations.length) {
                 query.operations[operation].selectedOperation.name = updatedQuery.name;
                 query.operations[operation].selectedOperation.description = updatedQuery.description;
@@ -91,11 +89,19 @@ angular.module('app').factory('previousQueries', function() {
         }
     }
 
+    /**
+     * Saves the current edit position in My Queries.
+     * @param {Integer} the operation chain being edited.
+     * @param {Integer} the operation being edited.
+     */
     service.setCurrentChain = function(chain, operation) {
        currentChain.chain = chain;
        currentChain.operation = operation;
     }
 
+    /**
+     * Returns the current edit position in My Queries.
+     */
     service.getCurrentChain = function() {
         return currentChain;
     }
