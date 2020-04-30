@@ -51,6 +51,5 @@ function MyQueriesController(previousQueries, navigation, operationChain) {
     }
 
     vm.saveUpdatedDetails = function(ev) {
-        console.log('Hello');
     }
 }

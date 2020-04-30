@@ -24,6 +24,11 @@ angular.module('app').factory('previousQueries', function() {
     
     var queries = [];
 
+    var currentChain = {
+        chain: 0,
+        operation: 0
+    };
+
     /**
      * Adds an object to the start of the previous queries. 
      * This is to give the impression that they are sorted by newest first.
@@ -84,6 +89,15 @@ angular.module('app').factory('previousQueries', function() {
                 query.operations[operation].selectedOperation.description = updatedQuery.description;
             }
         }
+    }
+
+    service.setCurrentChain = function(chain, operation) {
+       currentChain.chain = chain;
+       currentChain.operation = operation;
+    }
+
+    service.getCurrentChain = function() {
+        return currentChain;
     }
 
     return service;
