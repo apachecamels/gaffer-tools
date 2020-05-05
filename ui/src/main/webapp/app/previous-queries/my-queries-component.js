@@ -50,7 +50,7 @@ function MyQueriesController(previousQueries, navigation, operationChain) {
         navigation.goToQuery();
     }
 
-    vm.f1 = function(){
+    vm.queriesList = function(){
         return vm.queries;
     }
 }

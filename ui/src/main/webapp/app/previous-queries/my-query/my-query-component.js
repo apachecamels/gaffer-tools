@@ -24,8 +24,8 @@ function myQuery() {
         controller: MyQueryController,
         controllerAs: 'ctrl',
         bindings: {
-            model: '=',
-            chain: '='
+            model: '<',
+            chain: '<'
         },
         require: {
             parent: '?^^myQueries'
@@ -76,7 +76,6 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
             };
             $mdSidenav('right').toggle();
             previousQueries.setCurrentChain(vm.chain, operationIndex);
-            console.log(" getCurrentChain ", previousQueries.getCurrentChain());
         }
     }
 
@@ -87,7 +86,7 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
             $mdDialog.show(confirm)
             .then(() => {
               
-                queries = vm.parent.f1();
+                queries = vm.parent.queriesList();
                 // Update the local model to force the UI to update
                 if (chainToUpdate.chain >= 0 && chainToUpdate.chain <= queries.length) {
                     var query = queries[chainToUpdate.chain];
@@ -114,7 +113,4 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
         }
        
     }
-    // vm.$onInit = function(){
-    //     vm.parent.f1();
-    // }
 }

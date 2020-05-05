@@ -108,6 +108,5 @@ angular.module('app').factory('previousQueries', function() {
         return currentChain;
     }
 
-
     return service;
 });
