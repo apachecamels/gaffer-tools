@@ -26,7 +26,7 @@ angular.module('app').factory('previousQueries', function() {
 
     var currentChain = {
         chain: 0,
-        operation: 0
+        operationIndex: 0
     };
 
     /**
@@ -58,20 +58,25 @@ angular.module('app').factory('previousQueries', function() {
      */
     service.setQueries = function(operations) {
         queries = angular.copy(operations);
-        console.log("old queries  " , queries);
     }
 
     /**
      * Find query currently held by the service.
      */
-    service.findQuery = function() {
+    service.findQuery = function(opindex) {
+        console.log("this is findquery");
         queries.forEach(function(query) {
             console.log(query.operations);
-            query.operations.forEach(function(operation){
-                console.log(operation.selectedOperation.name)
-                console.log(operation.selectedOperation.description)
-            })
-        })
+            query.operations.forEach(function(operation, i){
+                console.log("opration index ", opindex , i);
+                if(opindex == i) 
+                {
+                    console.log(operation.selectedOperation.name);
+                    console.log(operation.selectedOperation.description);
+                    console.log(operation.expanded);
+                }
+            });
+        });
     }
 
     /**
@@ -80,13 +85,14 @@ angular.module('app').factory('previousQueries', function() {
      * @param {Integer} operation the operation being changed with the chain
      * @param {Object} updatedQuery the new name and description
      */
-    service.updateQuery = function(chain, operation, updatedQuery) {
+    service.updateQuery = function(chain, operationIndex, updatedQuery) {
         if (chain >= 0 && chain <= queries.length) {
-            console.log("updated queries  " , queries);
             var query = queries[chain];
-            if (operation >= 0 && operation <= query.operations.length) {
-                query.operations[operation].selectedOperation.name = updatedQuery.name;
-                query.operations[operation].selectedOperation.description = updatedQuery.description;
+            if (operationIndex >= 0 && operationIndex <= query.operations.length) {
+                var operationSelectedOperation = Object.assign({}, query.operations[operationIndex].selectedOperation);
+                operationSelectedOperation.name = updatedQuery.name;
+                operationSelectedOperation.description = updatedQuery.description;
+                query.operations[operationIndex] = {...query.operations[operationIndex], selectedOperation: operationSelectedOperation };
             }
         }
     }
@@ -96,9 +102,9 @@ angular.module('app').factory('previousQueries', function() {
      * @param {Integer} the operation chain being edited.
      * @param {Integer} the operation being edited.
      */
-    service.setCurrentChain = function(chain, operation) {
+    service.setCurrentChain = function(chain, operationIndex) {
        currentChain.chain = chain;
-       currentChain.operation = operation;
+       currentChain.operationIndex = operationIndex;
     }
 
     /**

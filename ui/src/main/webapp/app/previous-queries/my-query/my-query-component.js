@@ -24,8 +24,8 @@ function myQuery() {
         controller: MyQueryController,
         controllerAs: 'ctrl',
         bindings: {
-            model: '<',
-            chain: '<'
+            model: '=',
+            chain: '=',
         },
         require: {
             parent: '?^^myQueries'
@@ -52,8 +52,6 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
         description: null
     }
 
-    //var OPERATION_CHAIN_CLASS = "uk.gov.gchq.gaffer.operation.OperationChain";
-
     /**
      * Loads the operation into the operation chain builder
      */
@@ -69,11 +67,15 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
     }
 
     vm.openSideNav = function (operationIndex, operation) {
+
+        //var operationIndex = vm.model.operations.indexOf(operation);
+        
         if(!$mdSidenav('right').isOpen()) {
             vm.updatedQuery = {
                 name: operation.selectedOperation.name,
                 description: operation.selectedOperation.description
             };
+           
             $mdSidenav('right').toggle();
             previousQueries.setCurrentChain(vm.chain, operationIndex);
         }
@@ -81,26 +83,27 @@ function MyQueryController(operationChain, navigation, previousQueries, $mdSiden
 
     vm.saveUpdatedDetails = function() {
         var chainToUpdate = previousQueries.getCurrentChain();
-       
+
         if (vm.updatedQuery.name != null && vm.updatedQuery.name != '') {
             $mdDialog.show(confirm)
             .then(() => {
               
-                queries = vm.parent.queriesList();
-                // Update the local model to force the UI to update
+               queries = vm.parent.queriesList();
+      
+                //Update the local model to force the UI to update
                 if (chainToUpdate.chain >= 0 && chainToUpdate.chain <= queries.length) {
                     var query = queries[chainToUpdate.chain];
-                    
-                    if (chainToUpdate.operation >= 0 && chainToUpdate.operation <= query.operations.length) {
-                        query.operations[chainToUpdate.operation].selectedOperation.name = vm.updatedQuery.name;
-                        query.operations[chainToUpdate.operation].selectedOperation.description = vm.updatedQuery.description;
+                 
+                    if (chainToUpdate.operationIndex >= 0 && chainToUpdate.operationIndex <= query.operations.length) {
+                        var operationSelectedOperation = Object.assign({}, query.operations[chainToUpdate.operationIndex].selectedOperation);
+                        operationSelectedOperation.name = vm.updatedQuery.name;
+                        operationSelectedOperation.description = vm.updatedQuery.description;
+                        query.operations[chainToUpdate.operationIndex] = {...query.operations[chainToUpdate.operationIndex], selectedOperation: operationSelectedOperation };
                     }
                 }
               
-                // vm.model.operations[chainToUpdate.operation].selectedOperation.name = vm.updatedQuery.name;
-                // vm.model.operations[chainToUpdate.operation].selectedOperation.description = vm.updatedQuery.description;
                 // Save the changes and close the side nav
-                previousQueries.updateQuery(chainToUpdate.chain, chainToUpdate.operation, vm.updatedQuery);
+                previousQueries.updateQuery(chainToUpdate.chain, chainToUpdate.operationIndex, vm.updatedQuery);
                 $mdSidenav('right').toggle();
                 
             })
