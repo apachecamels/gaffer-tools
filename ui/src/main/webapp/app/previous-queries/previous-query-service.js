@@ -61,25 +61,6 @@ angular.module('app').factory('previousQueries', function() {
     }
 
     /**
-     * Find query currently held by the service.
-     */
-    service.findQuery = function(opindex) {
-        console.log("this is findquery");
-        queries.forEach(function(query) {
-            console.log(query.operations);
-            query.operations.forEach(function(operation, i){
-                console.log("opration index ", opindex , i);
-                if(opindex == i) 
-                {
-                    console.log(operation.selectedOperation.name);
-                    console.log(operation.selectedOperation.description);
-                    console.log(operation.expanded);
-                }
-            });
-        });
-    }
-
-    /**
      * Updates the specified query currently held by the service.
      * @param {Integer} chain the operation chain being modified
      * @param {Integer} operation the operation being changed with the chain
